@@ -1,0 +1,38 @@
+version: '3'
+services:
+  octorpki:
+    image: cloudflare/octorpki
+    container_name: octorpki
+    volumes:
+      - ./tals:/tals
+      - ./cache:/cache
+      - ./private.pem:/private.pem
+      - /usr/share/zoneinfo/Asia/Tokyo:/etc/localtime 
+    ports:
+      - (Your Internal Address):8081:8081
+    restart: always
+    logging:
+      driver: syslog
+      options:
+        syslog-facility: daemon
+        tag: octorpki-{{.ID}}
+
+  gortr:
+    image: cloudflare/gortr
+    container_name: gortr
+    volumes:
+      - ./public.pem:/public.pem
+      - /usr/share/zoneinfo/Asia/Tokyo:/etc/localtime 
+    command: "cache=http://(YOUR ADDRESS):8081/output.json -verify.key /public.pem -loglevel debug"
+    ports:
+      - (Your Internal Address):8080:8080
+      - (Your External Address):8082:8082
+      - (Your Internal Address):8083:8083
+    restart: always
+    depends_on:
+      - octorpki
+    logging:
+      driver: syslog
+      options:
+        syslog-facility: daemon
+        tag: gortr-{{.ID}}
