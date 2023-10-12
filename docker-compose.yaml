@@ -23,7 +23,7 @@ services:
     volumes:
       - ./public.pem:/public.pem
       - /usr/share/zoneinfo/Asia/Tokyo:/etc/localtime 
-    command: "cache=http://(YOUR ADDRESS):8081/output.json -verify.key /public.pem -loglevel debug"
+    command: "cache=http://(YOUR OctoRPKI ADDRESS):8081/output.json -verify.key /public.pem -loglevel debug"
     ports:
       - (Your Internal Address):8080:8080
       - (Your External Address):8082:8082
